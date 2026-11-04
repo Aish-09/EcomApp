@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Details</title>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { margin: 0; padding: 20px; background: #ffffff; color: #212121; }
+    .details-container { display: flex; gap: 30px; max-width: 820px; margin: 0 auto; }
+    .image-pane { width: 35%; text-align: center; border-right: 1px solid #e2e8f0; padding-right: 20px; display: flex; flex-direction: column; align-items: center; }
+    .product-icon { font-size: 96px; margin: 20px 0; min-height: 110px; display: flex; align-items: center; justify-content: center; }
+    .info-pane { width: 65%; max-height: 70vh; overflow-y: auto; padding-right: 10px; }
+    .badge { background: #388e3c; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 13px; display: inline-block; }
+    .price-row { display: flex; align-items: baseline; gap: 12px; margin: 15px 0; }
+    .price { font-size: 26px; font-weight: bold; color: #212121; }
+    .original { font-size: 16px; text-decoration: line-through; color: #878787; }
+    .desc { font-size: 14px; line-height: 1.6; color: #475569; margin-bottom: 20px; }
+    
+    .delivery-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 14px; margin-bottom: 20px; }
+    .delivery-input-group { display: flex; gap: 8px; margin-top: 8px; }
+    .delivery-input-group input { padding: 8px 12px; border: 1px solid #94a3b8; border-radius: 4px; flex: 1; font-size: 14px; }
+    .delivery-input-group button { background: #2874f0; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    
+    .btn-cart-frame { background: #ff9f00; border: none; color: white; font-weight: bold; padding: 14px 20px; border-radius: 4px; font-size: 15px; cursor: pointer; width: 100%; margin-top: auto; }
+    .btn-cart-frame:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* Reviews Section & Form */
+    .reviews-list { margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+    .review-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 10px; margin-bottom: 8px; }
+    .review-form-card { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 14px; margin: 15px 0; }
+    .review-form-card select, .review-form-card textarea { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 4px; margin-bottom: 8px; font-family: inherit; }
+    .btn-submit-review { background: #2874f0; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    .alert-review { font-size: 12px; padding: 6px 10px; border-radius: 4px; margin-bottom: 8px; display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="details-container">
+    <div class="image-pane">
+      <div id="frame-prod-img" class="product-icon" data-testid="frame-prod-icon">📦</div>
+      <button id="frame-add-cart-btn" class="btn-cart-frame" data-testid="frame-btn-add-cart" onclick="triggerAddToCart()">
+        ADD TO CART
+      </button>
+    </div>
+
+    <div class="info-pane">
+      <h2 id="frame-prod-title" data-testid="frame-txt-title" style="margin: 0 0 10px 0;">Loading...</h2>
+      <span id="frame-prod-rating" class="badge" data-testid="frame-badge-rating">0 ★</span>
+
+      <div class="price-row">
+        <span id="frame-prod-price" class="price" data-testid="frame-txt-price">₹0</span>
+        <span id="frame-prod-original" class="original" data-testid="frame-txt-original">₹0</span>
+      </div>
+
+      <p id="frame-prod-desc" class="desc" data-testid="frame-txt-description"></p>
+
+      <!-- Delivery Pincode Checker -->
+      <div class="delivery-box" role="region" aria-label="Delivery Location Check">
+        <label for="frame-pincode" style="font-size: 12px; font-weight: bold; color: #334155;">CHECK DELIVERY AVAILABILITY</label>
+        <div class="delivery-input-group">
+          <input type="text" id="frame-pincode" data-testid="frame-input-pincode" placeholder="Enter 6-digit Pincode" maxlength="6">
+          <button id="frame-btn-check-pin" data-testid="frame-btn-check-pin" onclick="verifyPincodeInFrame()">Verify</button>
+        </div>
+        <p id="frame-pin-msg" data-testid="frame-msg-pin-status" style="font-size: 12px; margin: 6px 0 0 0; min-height: 15px;"></p>
+      </div>
+
+      <!-- Add Rating & Review Form (Verified Buyers) -->
+      <div class="review-form-card" role="region" aria-label="Rate and Review Product">
+        <h4 style="margin: 0 0 6px 0; color: #1e293b;">Rate & Review This Product</h4>
+        <div id="review-feedback" class="alert-review" data-testid="msg-review-feedback"></div>
+
+        <form id="form-review" onsubmit="submitReview(event)">
+          <label for="rating-select" style="font-size: 12px; font-weight: bold; color: #475569;">Rating</label>
+          <select id="rating-select" data-testid="select-rating">
+            <option value="5">⭐⭐⭐⭐⭐ (5 - Outstanding)</option>
+            <option value="4">⭐⭐⭐⭐ (4 - Very Good)</option>
+            <option value="3">⭐⭐⭐ (3 - Average)</option>
+            <option value="2">⭐⭐ (2 - Below Average)</option>
+            <option value="1">⭐ (1 - Poor)</option>
+          </select>
+
+          <label for="review-comment" style="font-size: 12px; font-weight: bold; color: #475569;">Your Review</label>
+          <textarea id="review-comment" data-testid="input-review-comment" rows="2" placeholder="Write about your experience with this item..." required></textarea>
+
+          <button type="submit" id="btn-submit-review" data-testid="btn-submit-review" class="btn-submit-review">Submit Review</button>
+        </form>
+      </div>
+
+      <!-- Customer Reviews List -->
+      <div class="reviews-list">
+        <h4 style="margin: 0 0 10px 0;">Customer Reviews (<span id="txt-review-count">0</span>)</h4>
+        <div id="frame-reviews-container" data-testid="frame-reviews-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    let loadedProduct = null;
+
+    document.getElementById('frame-pincode').addEventListener('input', () => {
+      document.getElementById('frame-pin-msg').innerText = '';
+    });
+
+    function renderReviewsList(reviews) {
+      const container = document.getElementById('frame-reviews-container');
+      document.getElementById('txt-review-count').innerText = reviews.length;
+      if (reviews.length === 0) {
+        container.innerHTML = '<p style="font-size:12px; color:#878787;">No reviews yet. Be the first to review!</p>';
+        return;
+      }
+      container.innerHTML = reviews.map(r => `
+        <div class="review-item" data-testid="frame-review-card">
+          <div style="display:flex; justify-content:space-between; font-weight:600; font-size:13px;">
+            <span>${r.author}</span>
+            <span style="color:#16a34a;">${r.rating} ★</span>
+          </div>
+          <div style="font-size:12px; color:#475569; margin-top:3px;">${r.comment}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderProductData(prod) {
+      loadedProduct = prod;
+      document.getElementById('frame-prod-img').innerText = prod.image || '📦';
+      document.getElementById('frame-prod-title').innerText = prod.name || 'Product Details';
+      document.getElementById('frame-prod-rating').innerText = `${prod.rating || 0} ★ (${prod.reviews || 0})`;
+      document.getElementById('frame-prod-price').innerText = `₹${prod.price || 0}`;
+      document.getElementById('frame-prod-original').innerText = prod.originalPrice || prod.original_price ? `₹${prod.originalPrice || prod.original_price}` : '';
+      document.getElementById('frame-prod-desc').innerText = prod.description || 'Verified product listing.';
+
+      const btn = document.getElementById('frame-add-cart-btn');
+      const inStock = prod.inStock !== undefined ? prod.inStock : (prod.in_stock !== 0);
+      if (!inStock) {
+        btn.innerText = 'OUT OF STOCK';
+        btn.disabled = true;
+      } else {
+        btn.innerText = 'ADD TO CART';
+        btn.disabled = false;
+      }
+
+      renderReviewsList(prod.reviewsList || []);
+    }
+
+    async function fetchProductDetails() {
+      if (!productId) return;
+      try {
+        const res = await fetch(`/api/products/${productId}`);
+        if (!res.ok) throw new Error('Status ' + res.status);
+        const data = await res.json();
+        renderProductData(data);
+      } catch (err) {
+        if (window.parent && window.parent.cachedProducts) {
+          const fallback = window.parent.cachedProducts.find(p => p.id === productId);
+          if (fallback) renderProductData(fallback);
+        }
+      }
+    }
+
+    async function submitReview(e) {
+      e.preventDefault();
+      const feedback = document.getElementById('review-feedback');
+      const rating = document.getElementById('rating-select').value;
+      const comment = document.getElementById('review-comment').value.trim();
+
+      // Read auth token from localStorage (shared across the origin)
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        feedback.innerText = 'Please sign in or register before submitting a review.';
+        feedback.style.color = '#dc2626';
+        feedback.style.backgroundColor = '#fee2e2';
+        feedback.style.display = 'block';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/products/${productId}/reviews`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ rating, comment })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          feedback.innerText = data.error;
+          feedback.style.color = '#dc2626';
+          feedback.style.backgroundColor = '#fee2e2';
+          feedback.style.display = 'block';
+          return;
+        }
+
+        // Success: update aggregate rating badge and reviews list live
+        feedback.innerText = data.message;
+        feedback.style.color = '#166534';
+        feedback.style.backgroundColor = '#dcfce7';
+        feedback.style.display = 'block';
+
+        document.getElementById('frame-prod-rating').innerText = `${data.newRating} ★ (${data.totalReviews})`;
+        renderReviewsList(data.reviewsList);
+        document.getElementById('review-comment').value = '';
+
+        // Notify parent catalog to refresh ratings on the main cards
+        if (window.parent && window.parent.loadProducts) {
+          window.parent.loadProducts();
+        }
+      } catch (err) {
+        feedback.innerText = 'Failed to submit review. Server error.';
+        feedback.style.display = 'block';
+      }
+    }
+
+    async function verifyPincodeInFrame() {
+      const pin = document.getElementById('frame-pincode').value.trim();
+      const msg = document.getElementById('frame-pin-msg');
+      if (pin.length !== 6) {
+        msg.innerText = 'Please enter a valid 6-digit pincode';
+        msg.style.color = '#dc2626';
+        return;
+      }
+      const res = await fetch(`/api/shipping/check-pincode/${pin}`);
+      const data = await res.json();
+      msg.innerText = data.message;
+      msg.style.color = data.deliverable ? '#16a34a' : '#dc2626';
+      if (data.deliverable && window.parent) {
+        window.parent.postMessage({ type: 'PINCODE_VERIFIED', pincode: pin }, '*');
+      }
+    }
+
+    function triggerAddToCart() {
+      const id = loadedProduct?.id || productId;
+      if (!id) return;
+      window.parent.postMessage({ type: 'FRAME_ADD_TO_CART', productId: id }, '*');
+    }
+
+    fetchProductDetails();
+  </script>
+</body>
+</html>
