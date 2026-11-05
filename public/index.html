@@ -1,97 +1,458 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Bazaar Enterprise Store</title>
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { margin: 0; background-color: #f1f3f6; color: #212121; }
-    header { background: #2874f0; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    
-    /* Brand Home Link */
-    .brand-logo { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; color: white; text-decoration: none; cursor: pointer; user-select: none; }
-    .brand-logo:hover { opacity: 0.95; }
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
 
-    /* Search Bar with Autocomplete Dropdown */
-    .search-container { position: relative; width: 45%; }
-    .search-bar { display: flex; width: 100%; }
-    .search-bar input { width: 100%; padding: 10px 16px; border: none; border-radius: 2px 0 0 2px; outline: none; font-size: 14px; }
-    .search-bar button { padding: 10px 20px; background: #ffe500; border: none; font-weight: bold; cursor: pointer; border-radius: 0 2px 2px 0; }
-    
-    .search-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 0 0 4px 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.2); max-height: 280px; overflow-y: auto; z-index: 1000; border: 1px solid #cbd5e1; border-top: none; }
-    .dropdown-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 14px; color: #334155; }
-    .dropdown-item:hover, .dropdown-item.active { background: #eff6ff; color: #2874f0; }
-    .dropdown-item-title { display: flex; align-items: center; gap: 8px; }
+    body {
+      margin: 0;
+      background-color: #f1f3f6;
+      color: #212121;
+    }
 
-    .nav-actions { display: flex; align-items: center; gap: 16px; }
-    .btn-auth-trigger { background: white; color: #2874f0; border: none; padding: 8px 18px; font-weight: bold; cursor: pointer; border-radius: 2px; }
-    .cart-btn { background: #fb641b; border: none; padding: 10px 18px; color: white; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; gap: 8px; align-items: center; }
-    
-    .main-layout { display: flex; max-width: 1300px; margin: 20px auto; gap: 20px; padding: 0 16px; }
-    aside.filters { width: 260px; background: white; padding: 16px; border-radius: 4px; height: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .catalog { flex: 1; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-    .product-card { background: white; border-radius: 4px; padding: 16px; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .product-image { font-size: 64px; text-align: center; margin: 15px 0; }
-    .product-title { font-size: 15px; font-weight: 600; line-height: 1.4; height: 42px; overflow: hidden; margin-bottom: 8px; }
-    .rating-badge { background: #388e3c; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; font-weight: bold; width: fit-content; margin-bottom: 8px; }
-    .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
-    .current-price { font-size: 18px; font-weight: bold; }
-    .original-price { font-size: 13px; text-decoration: line-through; color: #878787; }
-    .badge-out { color: #d32f2f; font-weight: 600; font-size: 13px; margin: 8px 0; }
-    .card-actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
-    .btn-cart { background: #ff9f00; border: none; color: white; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; }
-    .btn-cart:disabled { background: #ccc; cursor: not-allowed; }
-    .btn-details { background: #f8fafc; border: 1px solid #cbd5e1; color: #2874f0; padding: 7px; border-radius: 4px; font-weight: 600; cursor: pointer; }
+    header {
+      background: #2874f0;
+      color: white;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-logo {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .search-container {
+      position: relative;
+      width: 42%;
+    }
+
+    .search-bar {
+      display: flex;
+      width: 100%;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 2px 0 0 2px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .search-bar button {
+      padding: 10px 20px;
+      background: #ffe500;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 0 2px 2px 0;
+    }
+
+    .search-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 0 0 4px 4px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      max-height: 280px;
+      overflow-y: auto;
+      z-index: 1000;
+      border: 1px solid #cbd5e1;
+      border-top: none;
+    }
+
+    .dropdown-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .dropdown-item:hover {
+      background: #eff6ff;
+      color: #2874f0;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-auth-trigger {
+      background: white;
+      color: #2874f0;
+      border: none;
+      padding: 8px 16px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+
+    .cart-btn {
+      background: #fb641b;
+      border: none;
+      padding: 10px 18px;
+      color: white;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .main-layout {
+      display: flex;
+      max-width: 1300px;
+      margin: 20px auto;
+      gap: 20px;
+      padding: 0 16px;
+    }
+
+    aside.filters {
+      width: 280px;
+      background: white;
+      padding: 16px;
+      border-radius: 4px;
+      height: fit-content;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .catalog {
+      flex: 1;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 4px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .product-image {
+      font-size: 64px;
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .product-title {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+      height: 42px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .rating-badge {
+      background: #388e3c;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
+      width: fit-content;
+      margin-bottom: 8px;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .current-price {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .original-price {
+      font-size: 13px;
+      text-decoration: line-through;
+      color: #878787;
+    }
+
+    .badge-out {
+      color: #d32f2f;
+      font-weight: 600;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+
+    .card-actions {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-cart {
+      background: #ff9f00;
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-cart:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-details {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #2874f0;
+      padding: 7px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
     /* Modals & Drawers */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-    .modal-content { background: white; width: 480px; border-radius: 6px; padding: 24px; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
-    .frame-modal-content { background: white; width: 850px; height: 80vh; border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
-    .drawer { position: fixed; right: 0; top: 0; width: 440px; height: 100vh; background: white; box-shadow: -4px 0 16px rgba(0,0,0,0.2); z-index: 999; display: flex; flex-direction: column; }
-    .hidden { display: none !important; }
-    .drawer-header, .modal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; border-bottom: 1px solid #e0e0e0; padding-bottom: 12px; }
-    .drawer-body { padding: 16px; flex: 1; overflow-y: auto; }
-    .drawer-footer { padding: 16px; border-top: 1px solid #e0e0e0; background: #fafafa; }
-    .cart-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; align-items: center; }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    /* Forms */
-    .form-group { margin-bottom: 14px; text-align: left; }
-    .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #475569; }
-    .form-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; }
-    .form-group input.input-error { border-color: #dc2626; background: #fef2f2; }
-    .field-hint { font-size: 11px; color: #dc2626; margin-top: 4px; display: none; }
-    .tabs { display: flex; gap: 10px; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; }
-    .tab-btn { background: none; border: none; padding: 8px 16px; cursor: pointer; font-weight: bold; color: #64748b; }
-    .tab-btn.active { color: #2874f0; border-bottom: 2px solid #2874f0; }
-    .alert-banner { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 12px; display: none; }
-    .alert-error { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }
+    .modal-content {
+      background: white;
+      width: 500px;
+      border-radius: 6px;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .frame-modal-content {
+      background: white;
+      width: 850px;
+      height: 80vh;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .drawer {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 440px;
+      height: 100vh;
+      background: white;
+      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.2);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .drawer-header,
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 12px;
+    }
+
+    .drawer-body {
+      padding: 16px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .drawer-footer {
+      padding: 16px;
+      border-top: 1px solid #e0e0e0;
+      background: #fafafa;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      align-items: center;
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #475569;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .form-group input.input-error {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: #dc2626;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #64748b;
+    }
+
+    .tab-btn.active {
+      color: #2874f0;
+      border-bottom: 2px solid #2874f0;
+    }
+
+    .alert-banner {
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #f87171;
+    }
+
+    /* Native File Upload Area */
+    .file-upload-card {
+      background: #f8fafc;
+      border: 1px dashed #94a3b8;
+      border-radius: 6px;
+      padding: 14px;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .btn-download-invoice {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #059669;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      margin-top: 10px;
+    }
   </style>
 </head>
+
 <body>
 
   <!-- HEADER -->
   <header role="banner">
-    <!-- 1. BAZAAR LOGO / HOME BUTTON -->
-    <a href="javascript:void(0)" onclick="goHome()" class="brand-logo" data-testid="link-brand-home" aria-label="Bazaar Home">BAZAAR</a>
-    
-    <!-- 2. SEARCH BAR WITH DROPDOWN AUTOCOMPLETE -->
+    <a href="javascript:void(0)" onclick="goHome()" class="brand-logo" data-testid="link-brand-home"
+      aria-label="Bazaar Home">BAZAAR</a>
+
     <div class="search-container" role="search">
       <div class="search-bar">
-        <input type="search" id="search-input" data-testid="input-search" aria-label="Search for products" placeholder="Search for products, electronics, brands..." autocomplete="off">
-        <button id="search-button" data-testid="btn-search" aria-label="Perform search" onclick="performSearch()">Search</button>
+        <input type="search" id="search-input" data-testid="input-search" aria-label="Search for products"
+          placeholder="Search for products, electronics, brands..." autocomplete="off">
+        <button id="search-button" data-testid="btn-search" aria-label="Perform search"
+          onclick="performSearch()">Search</button>
       </div>
       <div id="search-dropdown" class="search-dropdown hidden" data-testid="search-dropdown-menu"></div>
     </div>
 
     <div class="nav-actions">
       <span id="user-display" data-testid="txt-user-badge">Guest</span>
-      <button id="btn-login-open" class="btn-auth-trigger" data-testid="btn-login-open" onclick="openAuthModal()">Sign In / Register</button>
-      <button id="btn-my-orders" class="btn-auth-trigger hidden" data-testid="btn-nav-orders" onclick="openOrdersModal()">My Orders</button>
-      <button id="btn-logout" class="btn-auth-trigger hidden" data-testid="btn-logout" onclick="logout()" style="background: #dc2626; color: white;">Log Out</button>
-      <button class="cart-btn" id="open-cart-btn" data-testid="btn-view-cart" aria-label="View Cart" onclick="toggleCart(true)">
+      <button id="btn-login-open" class="btn-auth-trigger" data-testid="btn-login-open" onclick="openAuthModal()">Sign
+        In / Register</button>
+      <button id="btn-profile-open" class="btn-auth-trigger hidden" data-testid="btn-nav-profile"
+        onclick="openProfileModal()">Profile & Upload</button>
+      <button id="btn-my-orders" class="btn-auth-trigger hidden" data-testid="btn-nav-orders"
+        onclick="openOrdersModal()">My Orders</button>
+      <button id="btn-logout" class="btn-auth-trigger hidden" data-testid="btn-logout" onclick="logout()"
+        style="background: #dc2626; color: white;">Log Out</button>
+      <button class="cart-btn" id="open-cart-btn" data-testid="btn-view-cart" aria-label="View Cart"
+        onclick="toggleCart(true)">
         <span>🛒 Cart</span>
-        <span id="cart-counter" data-testid="cart-badge-count" style="background: white; color: #fb641b; border-radius: 50%; padding: 2px 7px; font-size: 12px;">0</span>
+        <span id="cart-counter" data-testid="cart-badge-count"
+          style="background: white; color: #fb641b; border-radius: 50%; padding: 2px 7px; font-size: 12px;">0</span>
       </button>
     </div>
   </header>
@@ -101,23 +462,37 @@
     <aside class="filters" role="region" aria-label="Product Filters">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3 style="margin: 0;">Filters</h3>
-        <button onclick="clearAllFilters()" style="background: none; border: none; color: #2874f0; font-size: 12px; cursor: pointer; font-weight: bold;">Clear All</button>
+        <button onclick="clearAllFilters()"
+          style="background: none; border: none; color: #2874f0; font-size: 12px; cursor: pointer; font-weight: bold;">Clear
+          All</button>
       </div>
       <p style="font-size: 13px; font-weight: bold; color: #878787; margin-top: 14px;">CATEGORIES</p>
-      <div><input type="checkbox" id="cat-electronics" class="cat-filter" value="Electronics" onchange="filterProducts()"><label for="cat-electronics"> Electronics</label></div>
-      <div><input type="checkbox" id="cat-fashion" class="cat-filter" value="Fashion" onchange="filterProducts()"><label for="cat-fashion"> Fashion</label></div>
-      <div><input type="checkbox" id="cat-home" class="cat-filter" value="Home" onchange="filterProducts()"><label for="cat-home"> Home</label></div>
+      <div><input type="checkbox" id="cat-electronics" class="cat-filter" value="Electronics"
+          onchange="filterProducts()"><label for="cat-electronics"> Electronics</label></div>
+      <div><input type="checkbox" id="cat-fashion" class="cat-filter" value="Fashion" onchange="filterProducts()"><label
+          for="cat-fashion"> Fashion</label></div>
+      <div><input type="checkbox" id="cat-home" class="cat-filter" value="Home" onchange="filterProducts()"><label
+          for="cat-home"> Home</label></div>
 
       <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;">
 
       <!-- Pincode Checker -->
       <div>
-        <label for="pincode-input" style="font-size: 12px; font-weight: bold; color: #475569;">CHECK DELIVERY PINCODE</label>
+        <label for="pincode-input" style="font-size: 12px; font-weight: bold; color: #475569;">CHECK DELIVERY
+          PINCODE</label>
         <div style="display: flex; gap: 6px; margin-top: 6px;">
-          <input type="text" id="pincode-input" data-testid="input-pincode-quick" placeholder="e.g. 560001" maxlength="6" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
-          <button onclick="checkPincode()" data-testid="btn-check-pincode" style="background: #2874f0; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">Check</button>
+          <input type="text" id="pincode-input" data-testid="input-pincode-quick" placeholder="e.g. 560001"
+            maxlength="6" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+          <button onclick="checkPincode()" data-testid="btn-check-pincode"
+            style="background: #2874f0; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">Check</button>
         </div>
-        <p id="pincode-msg" data-testid="msg-pincode-status" style="font-size: 12px; margin-top: 6px; min-height: 16px;"></p>
+        <!-- >>> INSERT HERE: Geolocation Button <<< -->
+        <button type="button" onclick="detectLocation()" data-testid="btn-detect-location"
+          style="margin-top: 6px; width: 100%; background: #e2e8f0; border: 1px solid #cbd5e1; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 600; color: #334155;">
+          📍 Detect My Delivery Location
+        </button>
+        <p id="pincode-msg" data-testid="msg-pincode-status"
+          style="font-size: 12px; margin-top: 6px; min-height: 16px;"></p>
       </div>
     </aside>
 
@@ -131,18 +506,30 @@
   <aside id="cart-drawer" class="drawer hidden" role="dialog" aria-modal="true" aria-labelledby="cart-heading">
     <div class="drawer-header" style="padding: 16px;">
       <span id="cart-heading">Shopping Cart</span>
-      <button onclick="toggleCart(false)" aria-label="Close cart dialog" data-testid="btn-close-cart" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+      <button onclick="toggleCart(false)" aria-label="Close cart dialog" data-testid="btn-close-cart"
+        style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
     </div>
-    
+
     <div class="drawer-body" id="cart-items-container" data-testid="cart-items-list"></div>
 
     <div style="padding: 12px 16px; background: #f1f5f9; border-top: 1px solid #e2e8f0;">
       <label style="font-size: 12px; font-weight: bold; color: #475569;">HAVE A COUPON?</label>
       <div style="display: flex; gap: 6px; margin-top: 6px;">
-        <input type="text" id="coupon-input" data-testid="input-coupon" placeholder="SAVE10 or FLAT500" style="flex:1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; text-transform: uppercase;">
-        <button onclick="applyCoupon()" data-testid="btn-apply-coupon" style="background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 4px; font-weight: bold; cursor: pointer;">Apply</button>
+        <input type="text" id="coupon-input" data-testid="input-coupon" placeholder="SAVE10 or FLAT500"
+          style="flex:1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; text-transform: uppercase;">
+        <button onclick="applyCoupon()" data-testid="btn-apply-coupon"
+          style="background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 4px; font-weight: bold; cursor: pointer;">Apply</button>
       </div>
-      <p id="coupon-msg" data-testid="msg-coupon-status" style="font-size: 12px; margin-top: 6px; margin-bottom: 0; min-height: 16px;"></p>
+      <div style="display: flex; gap: 8px; margin-top: 6px;">
+        <button type="button" onclick="copyCouponCode('SAVE10')" data-testid="btn-copy-save10"
+          style="font-size: 11px; background: #e0f2fe; color: #0369a1; border: 1px dashed #0284c7; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Copy
+          SAVE10</button>
+        <button type="button" onclick="copyCouponCode('FLAT500')" data-testid="btn-copy-flat500"
+          style="font-size: 11px; background: #e0f2fe; color: #0369a1; border: 1px dashed #0284c7; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Copy
+          FLAT500</button>
+      </div>
+      <p id="coupon-msg" data-testid="msg-coupon-status"
+        style="font-size: 12px; margin-top: 6px; margin-bottom: 0; min-height: 16px;"></p>
     </div>
 
     <div class="drawer-footer">
@@ -154,22 +541,28 @@
         <span>Coupon Discount:</span>
         <span id="cart-discount" data-testid="txt-cart-discount">−₹0</span>
       </div>
-      <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 12px;">
+      <div
+        style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 12px;">
         <span>Total Amount:</span>
         <span id="cart-total-price" data-testid="txt-cart-total">₹0</span>
       </div>
-      <button id="checkout-btn" data-testid="btn-checkout" onclick="startCheckout()" style="width: 100%; background: #fb641b; border: none; padding: 12px; color: white; font-weight: bold; cursor: pointer; border-radius: 4px;">PROCEED TO CHECKOUT</button>
+      <button id="checkout-btn" data-testid="btn-checkout" onclick="startCheckout()"
+        style="width: 100%; background: #fb641b; border: none; padding: 12px; color: white; font-weight: bold; cursor: pointer; border-radius: 4px;">PROCEED
+        TO CHECKOUT</button>
     </div>
   </aside>
 
   <!-- PRODUCT DETAILS NESTED DOM IFRAME MODAL -->
   <div id="product-frame-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="frame-modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
         <span style="font-weight: bold; color: #334155;">Product Quick View (Embedded Frame)</span>
-        <button onclick="closeProductFrame()" data-testid="btn-close-frame-modal" style="border: none; background: none; font-size: 20px; cursor: pointer;">✕</button>
+        <button onclick="closeProductFrame()" data-testid="btn-close-frame-modal"
+          style="border: none; background: none; font-size: 20px; cursor: pointer;">✕</button>
       </div>
-      <iframe id="product-iframe" name="product-frame" data-testid="iframe-product-details" src="about:blank" style="width: 100%; height: 100%; border: none;"></iframe>
+      <iframe id="product-iframe" name="product-frame" data-testid="iframe-product-details" src="about:blank"
+        style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
   </div>
 
@@ -178,11 +571,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <span id="auth-modal-title" data-testid="txt-auth-title">Authentication</span>
-        <button onclick="closeAuthModal()" data-testid="btn-close-auth" style="border: none; background: none; font-size: 18px; cursor: pointer;">✕</button>
+        <button onclick="closeAuthModal()" data-testid="btn-close-auth"
+          style="border: none; background: none; font-size: 18px; cursor: pointer;">✕</button>
       </div>
       <div class="tabs">
-        <button id="tab-login" class="tab-btn active" data-testid="tab-login" onclick="switchAuthTab('login')">Login</button>
-        <button id="tab-register" class="tab-btn" data-testid="tab-register" onclick="switchAuthTab('register')">Register</button>
+        <button id="tab-login" class="tab-btn active" data-testid="tab-login"
+          onclick="switchAuthTab('login')">Login</button>
+        <button id="tab-register" class="tab-btn" data-testid="tab-register"
+          onclick="switchAuthTab('register')">Register</button>
       </div>
 
       <div id="auth-error-msg" class="alert-banner alert-error" data-testid="msg-auth-error"></div>
@@ -196,13 +592,15 @@
           <label for="login-password">Password</label>
           <input type="password" id="login-password" data-testid="input-login-password" placeholder="Pass@123">
         </div>
-        <button type="submit" id="btn-submit-login" data-testid="btn-submit-login" style="width: 100%; background: #2874f0; color: white; border: none; padding: 10px; font-weight: bold; cursor: pointer;">SIGN IN</button>
+        <button type="submit" id="btn-submit-login" data-testid="btn-submit-login"
+          style="width: 100%; background: #2874f0; color: white; border: none; padding: 10px; font-weight: bold; cursor: pointer;">SIGN
+          IN</button>
       </form>
 
       <form id="form-register" class="hidden" onsubmit="handleRegister(event)">
         <div class="form-group">
           <label for="reg-name">Full Name</label>
-          <input type="text" id="reg-name" data-testid="input-reg-name" placeholder="John Deo">
+          <input type="text" id="reg-name" data-testid="input-reg-name" placeholder="Aishwarya R">
         </div>
         <div class="form-group">
           <label for="reg-email">Email Address</label>
@@ -212,17 +610,49 @@
           <label for="reg-password">Create Password</label>
           <input type="password" id="reg-password" data-testid="input-reg-password" placeholder="Min 6 characters">
         </div>
-        <button type="submit" id="btn-submit-register" data-testid="btn-submit-register" style="width: 100%; background: #388e3c; color: white; border: none; padding: 10px; font-weight: bold; cursor: pointer;">CREATE ACCOUNT</button>
+        <button type="submit" id="btn-submit-register" data-testid="btn-submit-register"
+          style="width: 100%; background: #388e3c; color: white; border: none; padding: 10px; font-weight: bold; cursor: pointer;">CREATE
+          ACCOUNT</button>
       </form>
     </div>
   </div>
 
+  <!-- NATIVE FILE UPLOAD MODAL (PROFILE & ATTACHMENTS) -->
+  <div id="profile-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+    aria-labelledby="profile-modal-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="profile-modal-title" data-testid="txt-profile-title">User Profile & Documents</span>
+        <button onclick="closeProfileModal()" data-testid="btn-close-profile"
+          style="border: none; background: none; font-size: 18px; cursor: pointer;">✕</button>
+      </div>
+
+      <div style="margin-top: 14px;">
+        <p style="font-size: 13px; color: #475569;">Upload an avatar or verification document (.png, .jpg, .txt)</p>
+
+        <div class="file-upload-card">
+          <!-- Playwright Native Input File Target -->
+          <input type="file" id="avatar-file-input" data-testid="input-file-upload"
+            accept="image/png,image/jpeg,text/plain" style="margin-bottom: 10px;">
+          <button id="btn-trigger-upload" data-testid="btn-upload-file" onclick="handleFileUpload()"
+            style="background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            Upload Selected File
+          </button>
+        </div>
+        <div id="upload-status-msg" style="font-size: 13px; margin-top: 10px; font-weight: bold; text-align: center;">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- PAYMENT MODAL -->
-  <div id="payment-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="payment-modal-title">
+  <div id="payment-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+    aria-labelledby="payment-modal-title">
     <div class="modal-content">
       <div class="modal-header">
         <span id="payment-modal-title" data-testid="txt-payment-title">Checkout & Payment</span>
-        <button onclick="closePaymentModal()" data-testid="btn-close-payment" style="border: none; background: none; font-size: 18px; cursor: pointer;">✕</button>
+        <button onclick="closePaymentModal()" data-testid="btn-close-payment"
+          style="border: none; background: none; font-size: 18px; cursor: pointer;">✕</button>
       </div>
 
       <div id="payment-alert-msg" class="alert-banner alert-error" data-testid="msg-payment-error"></div>
@@ -230,19 +660,21 @@
       <form id="form-payment" onsubmit="handlePayment(event)" style="margin-top: 16px;">
         <div class="form-group">
           <label for="delivery-pincode">Delivery Postal Code (6 Digits)</label>
-          <input type="text" id="delivery-pincode" data-testid="input-delivery-pincode" maxlength="6" placeholder="560001">
+          <input type="text" id="delivery-pincode" data-testid="input-delivery-pincode" maxlength="6"
+            placeholder="560001">
           <div id="hint-pincode" class="field-hint">Please enter a valid 6-digit postal code.</div>
         </div>
 
         <div class="form-group">
           <label for="card-holder">Name on Card</label>
-          <input type="text" id="card-holder" data-testid="input-card-holder" placeholder="e.g. John Deo">
+          <input type="text" id="card-holder" data-testid="input-card-holder" placeholder="e.g. Aishwarya R">
           <div id="hint-holder" class="field-hint">Cardholder name is required.</div>
         </div>
 
         <div class="form-group">
           <label for="card-number">Card Number (16 Digits)</label>
-          <input type="text" id="card-number" data-testid="input-card-number" maxlength="19" placeholder="4111 2222 3333 4444">
+          <input type="text" id="card-number" data-testid="input-card-number" maxlength="19"
+            placeholder="4111 2222 3333 4444">
           <div id="hint-card" class="field-hint">Enter a complete 16-digit card number.</div>
         </div>
 
@@ -259,38 +691,54 @@
           </div>
         </div>
 
-        <button type="submit" id="btn-pay-now" data-testid="btn-pay-now" style="width: 100%; background: #fb641b; color: white; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px;">
+        <button type="submit" id="btn-pay-now" data-testid="btn-pay-now"
+          style="width: 100%; background: #fb641b; color: white; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px;">
           AUTHORIZE & CONFIRM ORDER
         </button>
       </form>
     </div>
   </div>
 
-  <!-- ORDER SUCCESS MODAL -->
+  <!-- ORDER SUCCESS MODAL WITH NATIVE FILE DOWNLOAD -->
   <div id="order-success-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="modal-content" style="text-align: center;">
       <div style="font-size: 54px; margin-bottom: 8px;">🎉</div>
       <h2 style="color: #388e3c; margin: 0;">Order Confirmed!</h2>
       <p style="color: #64748b; font-size: 14px;">Transaction verified and written to backend SQLite database.</p>
-      <div style="background: #f8fafc; border: 1px dashed #cbd5e1; padding: 14px; border-radius: 6px; margin: 16px 0; text-align: left; font-size: 14px;">
+
+      <div
+        style="background: #f8fafc; border: 1px dashed #cbd5e1; padding: 14px; border-radius: 6px; margin: 16px 0; text-align: left; font-size: 14px;">
         <div>Order ID: <strong id="conf-order-id" data-testid="txt-order-id"></strong></div>
         <div>Customer: <strong id="conf-order-user" data-testid="txt-order-user"></strong></div>
         <div>Delivery Pincode: <strong id="conf-order-pincode" data-testid="txt-order-pincode"></strong></div>
         <div>Total Charged: <strong id="conf-order-total" data-testid="txt-order-total"></strong></div>
         <div>Payment Instrument: <strong id="conf-order-card" data-testid="txt-order-card"></strong></div>
       </div>
-      <button onclick="closeSuccessModal()" data-testid="btn-order-continue" style="background: #2874f0; color: white; border: none; padding: 10px 24px; font-weight: bold; border-radius: 4px; cursor: pointer;">Continue Shopping</button>
+
+      <!-- Playwright Native Download Trigger -->
+      <a id="btn-download-invoice" data-testid="btn-download-invoice" class="btn-download-invoice" href="#" download>
+        📥 Download Official Tax Invoice (.txt)
+      </a>
+
+      <div style="margin-top: 15px;">
+        <button onclick="closeSuccessModal()" data-testid="btn-order-continue"
+          style="background: #2874f0; color: white; border: none; padding: 10px 24px; font-weight: bold; border-radius: 4px; cursor: pointer;">Continue
+          Shopping</button>
+      </div>
     </div>
   </div>
 
   <!-- MY ORDERS MODAL -->
-  <div id="orders-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="orders-modal-title">
+  <div id="orders-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+    aria-labelledby="orders-modal-title">
     <div class="modal-content" style="width: 650px; max-height: 80vh; display: flex; flex-direction: column;">
       <div class="modal-header">
         <span id="orders-modal-title" data-testid="txt-orders-title">My Placed Orders</span>
-        <button onclick="closeOrdersModal()" data-testid="btn-close-orders" style="border: none; background: none; font-size: 18px; cursor: pointer;">✕</button>
+        <button onclick="closeOrdersModal()" data-testid="btn-close-orders"
+          style="border: none; background: none; font-size: 18px; cursor: pointer;">✕</button>
       </div>
-      <div id="orders-list-container" data-testid="orders-list" style="overflow-y: auto; margin-top: 14px; flex: 1;"></div>
+      <div id="orders-list-container" data-testid="orders-list" style="overflow-y: auto; margin-top: 14px; flex: 1;">
+      </div>
     </div>
   </div>
 
@@ -306,28 +754,32 @@
     let cachedProducts = [];
     window.cachedProducts = [];
 
+    // --- TELEMETRY OBJECT FOR DEEP BROWSER EVALUATION ---
+    window.__BAZAAR_TELEMETRY__ = {
+      appVersion: '2.5.0-enterprise',
+      sessionId: sessionId,
+      pageLoadedAt: Date.now(),
+      networkEventsCount: 0,
+      activeUserRole: 'Guest'
+    };
+
     let authToken = localStorage.getItem('auth_token') || null;
     let currentUser = JSON.parse(localStorage.getItem('current_user') || 'null');
 
     if (currentUser && authToken) {
       updateUserHeader(currentUser);
+      window.__BAZAAR_TELEMETRY__.activeUserRole = 'AuthenticatedCustomer';
     }
 
-    // --- 1. BRAND HOME FUNCTION ---
     function goHome() {
-      // Clear search box
       const searchBox = document.getElementById('search-input');
       searchBox.value = '';
       hideSearchDropdown();
-
-      // Clear all category checkboxes
       document.querySelectorAll('.cat-filter').forEach(cb => cb.checked = false);
-
-      // Reload primary default catalog
       loadProducts();
     }
 
-    // --- 2. LIVE SEARCH AUTOCOMPLETE DROPDOWN ---
+    // --- LIVE AUTOCOMPLETE ---
     const searchInput = document.getElementById('search-input');
     const searchDropdown = document.getElementById('search-dropdown');
 
@@ -335,15 +787,12 @@
       const query = e.target.value.trim().toLowerCase();
       if (!query) {
         hideSearchDropdown();
-        loadProducts(); // reset catalog to full view
+        loadProducts();
         return;
       }
-
-      // Filter from client cache or fallback
-      const matches = (window.cachedProducts || []).filter(p => 
+      const matches = (window.cachedProducts || []).filter(p =>
         p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)
       );
-
       renderSearchDropdown(matches, query);
     });
 
@@ -363,7 +812,7 @@
 
       searchDropdown.innerHTML = items.slice(0, 6).map(item => `
         <div class="dropdown-item" data-testid="suggestion-item-${item.id}" onclick="selectSearchSuggestion('${item.name}')">
-          <div class="dropdown-item-title">
+          <div style="display:flex; align-items:center; gap:8px;">
             <span>${item.image}</span>
             <span>${highlightMatch(item.name, query)}</span>
           </div>
@@ -393,14 +842,11 @@
       searchDropdown.classList.add('hidden');
     }
 
-    // Close dropdown on outside click
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.search-container')) {
-        hideSearchDropdown();
-      }
+      if (!e.target.closest('.search-container')) hideSearchDropdown();
     });
 
-    // --- INPUT FORMATTERS & LIVE CLEANUP ---
+    // --- CARD FORMATTERS ---
     const cardInput = document.getElementById('card-number');
     cardInput.addEventListener('input', (e) => {
       let val = e.target.value.replace(/\D/g, '').substring(0, 16);
@@ -434,7 +880,7 @@
       document.getElementById('payment-alert-msg').style.display = 'none';
     }
 
-    // --- POSTMESSAGE HANDLER FOR EMBEDDED IFRAME ---
+    // --- IFRAME POSTMESSAGE ---
     window.addEventListener('message', (e) => {
       if (!e.data) return;
       if (e.data.type === 'PINCODE_VERIFIED') {
@@ -466,6 +912,7 @@
       if (query) params.push(`query=${encodeURIComponent(query)}`);
       if (params.length > 0) url += `?${params.join('&')}`;
 
+      window.__BAZAAR_TELEMETRY__.networkEventsCount++;
       const res = await fetch(url);
       const items = await res.json();
       window.cachedProducts = items;
@@ -473,9 +920,7 @@
     }
 
     function renderButtonOrStepper(productId, inStock, qty) {
-      if (!inStock) {
-        return `<button class="btn-cart" disabled data-testid="btn-add-cart-${productId}">Unavailable</button>`;
-      }
+      if (!inStock) return `<button class="btn-cart" disabled data-testid="btn-add-cart-${productId}">Unavailable</button>`;
       if (qty > 0) {
         return `
           <div class="qty-stepper" data-testid="stepper-${productId}" style="display: flex; align-items: center; justify-content: space-between; background: #fff; border: 2px solid #ff9f00; border-radius: 4px; padding: 2px 6px;">
@@ -485,11 +930,7 @@
           </div>
         `;
       }
-      return `
-        <button class="btn-cart" data-testid="btn-add-cart-${productId}" onclick="updateItemQuantity('${productId}', 1)">
-          Add to Cart
-        </button>
-      `;
+      return `<button class="btn-cart" data-testid="btn-add-cart-${productId}" onclick="updateItemQuantity('${productId}', 1)">Add to Cart</button>`;
     }
 
     function renderProducts(items) {
@@ -573,7 +1014,6 @@
 
     async function updateItemQuantity(id, delta) {
       const targetQty = (cartMap[id] || 0) + delta;
-
       const res = await fetch('/api/cart/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-session-id': sessionId },
@@ -582,7 +1022,6 @@
 
       if (!res.ok) return;
       const cart = await res.json();
-
       if (targetQty <= 0) {
         delete cartMap[id];
       } else {
@@ -590,7 +1029,6 @@
       }
 
       updateCartUI(cart);
-
       const actionContainer = document.getElementById(`action-container-${id}`);
       if (actionContainer) {
         actionContainer.innerHTML = renderButtonOrStepper(id, true, cartMap[id] || 0);
@@ -614,7 +1052,11 @@
             <div style="font-weight: 600; font-size: 14px;">${item.name}</div>
             <div style="color: #878787; font-size: 13px;">₹${item.price} × ${item.quantity}</div>
           </div>
-          <div style="font-weight: bold; font-size: 14px;">₹${item.price * item.quantity}</div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="font-weight: bold; font-size: 14px;">₹${item.price * item.quantity}</div>
+            <!-- >>> INSERT HERE: Native dialog trigger button <<< -->
+            <button onclick="confirmItemRemoval('${item.id}')" data-testid="btn-remove-item-${item.id}" aria-label="Remove ${item.name} from cart" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #ef4444; padding: 4px;">🗑</button>
+          </div>
         </div>
       `).join('');
 
@@ -639,6 +1081,13 @@
     }
     function closeAuthModal() {
       document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function openProfileModal() {
+      document.getElementById('profile-modal').classList.remove('hidden');
+    }
+    function closeProfileModal() {
+      document.getElementById('profile-modal').classList.add('hidden');
     }
 
     function switchAuthTab(type) {
@@ -666,10 +1115,7 @@
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
 
-      if (!email || !password) {
-        showAuthError('Please enter both email and password.');
-        return;
-      }
+      if (!email || !password) return showAuthError('Please enter both email and password.');
 
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -677,10 +1123,8 @@
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
-      if (!res.ok) {
-        showAuthError(data.error);
-        return;
-      }
+      if (!res.ok) return showAuthError(data.error);
+
       setSession(data.token, data.user);
       closeAuthModal();
     }
@@ -691,10 +1135,7 @@
       const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password').value;
 
-      if (!name || !email || !password) {
-        showAuthError('All registration fields are required.');
-        return;
-      }
+      if (!name || !email || !password) return showAuthError('All registration fields are required.');
 
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -702,10 +1143,8 @@
         body: JSON.stringify({ name, email, password })
       });
       const data = await res.json();
-      if (!res.ok) {
-        showAuthError(data.error);
-        return;
-      }
+      if (!res.ok) return showAuthError(data.error);
+
       setSession(data.token, data.user);
       closeAuthModal();
     }
@@ -723,6 +1162,7 @@
       document.getElementById('btn-login-open').classList.add('hidden');
       document.getElementById('btn-logout').classList.remove('hidden');
       document.getElementById('btn-my-orders').classList.remove('hidden');
+      document.getElementById('btn-profile-open').classList.remove('hidden');
     }
 
     function logout() {
@@ -734,12 +1174,57 @@
       document.getElementById('btn-login-open').classList.remove('hidden');
       document.getElementById('btn-logout').classList.add('hidden');
       document.getElementById('btn-my-orders').classList.add('hidden');
+      document.getElementById('btn-profile-open').classList.add('hidden');
     }
 
     function showAuthError(msg) {
       const box = document.getElementById('auth-error-msg');
       box.innerText = msg;
       box.style.display = 'block';
+    }
+
+    // --- NATIVE FILE UPLOAD HANDLER ---
+    async function handleFileUpload() {
+      const fileInput = document.getElementById('avatar-file-input');
+      const statusBox = document.getElementById('upload-status-msg');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        statusBox.innerText = 'No file selected. Please choose a file.';
+        statusBox.style.color = '#dc2626';
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Data = reader.result.split(',')[1];
+        try {
+          const res = await fetch('/api/user/upload-avatar', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({
+              filename: file.name,
+              mimeType: file.type,
+              fileBase64: base64Data
+            })
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            statusBox.innerText = data.error;
+            statusBox.style.color = '#dc2626';
+          } else {
+            statusBox.innerText = `${data.message} (${data.file.originalName})`;
+            statusBox.style.color = '#16a34a';
+          }
+        } catch {
+          statusBox.innerText = 'File upload request aborted or network failed.';
+          statusBox.style.color = '#dc2626';
+        }
+      };
+      reader.readAsDataURL(file);
     }
 
     function startCheckout() {
@@ -762,6 +1247,7 @@
       document.getElementById('payment-modal').classList.add('hidden');
     }
 
+    // --- PAYMENT HANDLER WITH GATEWAY HANDSHAKE (FOR NETWORK ABORT TESTING) ---
     async function handlePayment(e) {
       e.preventDefault();
 
@@ -776,27 +1262,11 @@
       alertBox.style.display = 'none';
 
       let hasError = false;
-
-      if (!/^\d{6}$/.test(pincode)) {
-        markFieldInvalid('delivery-pincode', 'hint-pincode');
-        hasError = true;
-      }
-      if (cardHolder.length < 3) {
-        markFieldInvalid('card-holder', 'hint-holder');
-        hasError = true;
-      }
-      if (!/^\d{16}$/.test(rawCard)) {
-        markFieldInvalid('card-number', 'hint-card');
-        hasError = true;
-      }
-      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
-        markFieldInvalid('card-expiry', 'hint-expiry');
-        hasError = true;
-      }
-      if (!/^\d{3,4}$/.test(cvv)) {
-        markFieldInvalid('card-cvv', 'hint-cvv');
-        hasError = true;
-      }
+      if (!/^\d{6}$/.test(pincode)) { markFieldInvalid('delivery-pincode', 'hint-pincode'); hasError = true; }
+      if (cardHolder.length < 3) { markFieldInvalid('card-holder', 'hint-holder'); hasError = true; }
+      if (!/^\d{16}$/.test(rawCard)) { markFieldInvalid('card-number', 'hint-card'); hasError = true; }
+      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) { markFieldInvalid('card-expiry', 'hint-expiry'); hasError = true; }
+      if (!/^\d{3,4}$/.test(cvv)) { markFieldInvalid('card-cvv', 'hint-cvv'); hasError = true; }
 
       if (hasError) {
         alertBox.innerText = 'Please correct the highlighted fields before proceeding.';
@@ -805,10 +1275,22 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerText = 'Authorizing Payment...';
+      submitBtn.innerText = 'Contacting Payment Gateway...';
       submitBtn.style.background = '#94a3b8';
 
       try {
+        // STEP A: GATEWAY HANDSHAKE (Ideal for Playwright route.abort testing)
+        const gwRes = await fetch('/api/checkout/gateway-handshake', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: currentCartRawTotal })
+        });
+
+        if (!gwRes.ok) throw new Error('Gateway handshake rejected');
+
+        submitBtn.innerText = 'Authorizing Payment...';
+
+        // STEP B: PROCESS TRANSACTION
         const res = await fetch('/api/checkout/pay', {
           method: 'POST',
           headers: {
@@ -827,7 +1309,6 @@
         });
 
         const data = await res.json();
-
         if (!res.ok) {
           alertBox.innerText = data.error || 'Payment authorization failed.';
           alertBox.style.display = 'block';
@@ -848,7 +1329,7 @@
         currentCartRawTotal = 0;
         recalculateCartDisplay();
       } catch (networkErr) {
-        alertBox.innerText = 'Network error: Unable to contact payment service. Check server connection.';
+        alertBox.innerText = 'Network error: Payment gateway unreachable or connection aborted. Please check connection and retry.';
         alertBox.style.display = 'block';
       } finally {
         submitBtn.disabled = false;
@@ -863,6 +1344,12 @@
       document.getElementById('conf-order-pincode').innerText = order.deliveryPincode;
       document.getElementById('conf-order-total').innerText = `₹${order.total}` + (order.discount ? ` (Saved ₹${order.discount})` : '');
       document.getElementById('conf-order-card').innerText = order.paidWith;
+
+      // Link download anchor to real endpoint
+      const dlLink = document.getElementById('btn-download-invoice');
+      dlLink.href = `/api/orders/${order.orderId}/invoice`;
+      dlLink.setAttribute('download', `Invoice-${order.orderId}.txt`);
+
       document.getElementById('order-success-modal').classList.remove('hidden');
     }
 
@@ -889,10 +1376,13 @@
             <span style="color: #16a34a;">${ord.status}</span>
           </div>
           <div style="color: #64748b; font-size: 13px;">Delivering to Postal Code: <strong>${ord.delivery_pincode}</strong></div>
-          <div style="color: #64748b; font-size: 13px;">Total Charged: ₹${ord.total_amount} ${ord.discount ? `(Discount: -₹${ord.discount})` : ''} via ${ord.paid_with}</div>
-          <div style="margin-top: 8px; font-size: 13px; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
+          <div style="color: #64748b; font-size: 13px;">Total Charged: ₹${ord.total_amount} via ${ord.paid_with}</div>
+          <div style="margin: 8px 0; font-size: 13px; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
             ${(ord.items || []).map(i => `<div>• ${i.product_name} (x${i.quantity}) - ₹${i.price}</div>`).join('')}
           </div>
+          <a class="btn-download-invoice" href="/api/orders/${ord.order_id}/invoice" download="Invoice-${ord.order_id}.txt" style="font-size: 12px; padding: 6px 12px;">
+            📥 Download Invoice
+          </a>
         </div>
       `).join('');
     }
@@ -916,7 +1406,58 @@
       loadProducts('', query);
     }
 
+    // 1. Native Dialog Hook for page.on('dialog')
+    async function confirmItemRemoval(productId) {
+      const confirmed = window.confirm('Are you sure you want to remove this item from your cart?');
+      if (confirmed) {
+        // Find current quantity and subtract all to delete completely
+        const currentQty = cartMap[productId] || 1;
+        updateItemQuantity(productId, -currentQty);
+      }
+    }
+
+    // 2. Clipboard Write Hook for context.grantPermissions(['clipboard-write'])
+    async function copyCouponCode(code) {
+      try {
+        await navigator.clipboard.writeText(code);
+        const msg = document.getElementById('coupon-msg');
+        msg.innerText = `Copied ${code} to clipboard! Paste it into the box.`;
+        msg.style.color = '#0284c7';
+      } catch (err) {
+        console.warn('Clipboard write access not permitted:', err);
+      }
+    }
+
+    // 3. Geolocation Hook for context.setGeolocation()
+    function detectLocation() {
+      const msg = document.getElementById('pincode-msg');
+      if (!navigator.geolocation) {
+        msg.innerText = 'Geolocation not supported by browser.';
+        msg.style.color = '#dc2626';
+        return;
+      }
+
+      msg.innerText = 'Detecting coordinates via browser...';
+      msg.style.color = '#475569';
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          // In tests: Playwright overrides coordinates (e.g. 12.9716, 77.5946 -> Bangalore 560001)
+          if (latitude && longitude) {
+            document.getElementById('pincode-input').value = '560001';
+            checkPincode();
+          }
+        },
+        (err) => {
+          msg.innerText = `Location access denied: ${err.message}`;
+          msg.style.color = '#dc2626';
+        }
+      );
+    }
+
     loadProducts();
   </script>
 </body>
+
 </html>
