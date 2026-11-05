@@ -374,6 +374,14 @@ app.get('/product-details.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'product-details.html'));
 });
 
+app.get('/advanced-catalog.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'advanced-catalog.html'));
+});
+
+app.get('/secure-checkout.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'secure-checkout.html'));
+});
+
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

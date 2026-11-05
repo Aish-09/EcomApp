@@ -7,9 +7,22 @@
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { margin: 0; background-color: #f1f3f6; color: #212121; }
     header { background: #2874f0; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .search-bar { display: flex; width: 45%; }
-    .search-bar input { width: 100%; padding: 10px 16px; border: none; border-radius: 2px 0 0 2px; outline: none; }
+    
+    /* Brand Home Link */
+    .brand-logo { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; color: white; text-decoration: none; cursor: pointer; user-select: none; }
+    .brand-logo:hover { opacity: 0.95; }
+
+    /* Search Bar with Autocomplete Dropdown */
+    .search-container { position: relative; width: 45%; }
+    .search-bar { display: flex; width: 100%; }
+    .search-bar input { width: 100%; padding: 10px 16px; border: none; border-radius: 2px 0 0 2px; outline: none; font-size: 14px; }
     .search-bar button { padding: 10px 20px; background: #ffe500; border: none; font-weight: bold; cursor: pointer; border-radius: 0 2px 2px 0; }
+    
+    .search-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 0 0 4px 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.2); max-height: 280px; overflow-y: auto; z-index: 1000; border: 1px solid #cbd5e1; border-top: none; }
+    .dropdown-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 14px; color: #334155; }
+    .dropdown-item:hover, .dropdown-item.active { background: #eff6ff; color: #2874f0; }
+    .dropdown-item-title { display: flex; align-items: center; gap: 8px; }
+
     .nav-actions { display: flex; align-items: center; gap: 16px; }
     .btn-auth-trigger { background: white; color: #2874f0; border: none; padding: 8px 18px; font-weight: bold; cursor: pointer; border-radius: 2px; }
     .cart-btn { background: #fb641b; border: none; padding: 10px 18px; color: white; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; gap: 8px; align-items: center; }
@@ -17,7 +30,7 @@
     .main-layout { display: flex; max-width: 1300px; margin: 20px auto; gap: 20px; padding: 0 16px; }
     aside.filters { width: 260px; background: white; padding: 16px; border-radius: 4px; height: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .catalog { flex: 1; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
     .product-card { background: white; border-radius: 4px; padding: 16px; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
     .product-image { font-size: 64px; text-align: center; margin: 15px 0; }
     .product-title { font-size: 15px; font-weight: 600; line-height: 1.4; height: 42px; overflow: hidden; margin-bottom: 8px; }
@@ -42,32 +55,35 @@
     .drawer-footer { padding: 16px; border-top: 1px solid #e0e0e0; background: #fafafa; }
     .cart-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; align-items: center; }
 
-    /* Form & Input Validation Styles */
+    /* Forms */
     .form-group { margin-bottom: 14px; text-align: left; }
     .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #475569; }
-    .form-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; transition: border-color .2s; }
+    .form-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; }
     .form-group input.input-error { border-color: #dc2626; background: #fef2f2; }
     .field-hint { font-size: 11px; color: #dc2626; margin-top: 4px; display: none; }
-    
     .tabs { display: flex; gap: 10px; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; }
     .tab-btn { background: none; border: none; padding: 8px 16px; cursor: pointer; font-weight: bold; color: #64748b; }
     .tab-btn.active { color: #2874f0; border-bottom: 2px solid #2874f0; }
-    
-    /* Notification Alerts */
-    .alert-banner { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 12px; display: none; line-height: 1.4; }
+    .alert-banner { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 12px; display: none; }
     .alert-error { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }
-    .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
   </style>
 </head>
 <body>
 
   <!-- HEADER -->
   <header role="banner">
-    <div style="font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">BAZAAR</div>
-    <div class="search-bar" role="search">
-      <input type="search" id="search-input" data-testid="input-search" aria-label="Search for products" placeholder="Search for products...">
-      <button id="search-button" data-testid="btn-search" aria-label="Perform search" onclick="performSearch()">Search</button>
+    <!-- 1. BAZAAR LOGO / HOME BUTTON -->
+    <a href="javascript:void(0)" onclick="goHome()" class="brand-logo" data-testid="link-brand-home" aria-label="Bazaar Home">BAZAAR</a>
+    
+    <!-- 2. SEARCH BAR WITH DROPDOWN AUTOCOMPLETE -->
+    <div class="search-container" role="search">
+      <div class="search-bar">
+        <input type="search" id="search-input" data-testid="input-search" aria-label="Search for products" placeholder="Search for products, electronics, brands..." autocomplete="off">
+        <button id="search-button" data-testid="btn-search" aria-label="Perform search" onclick="performSearch()">Search</button>
+      </div>
+      <div id="search-dropdown" class="search-dropdown hidden" data-testid="search-dropdown-menu"></div>
     </div>
+
     <div class="nav-actions">
       <span id="user-display" data-testid="txt-user-badge">Guest</span>
       <button id="btn-login-open" class="btn-auth-trigger" data-testid="btn-login-open" onclick="openAuthModal()">Sign In / Register</button>
@@ -83,11 +99,14 @@
   <!-- MAIN CATALOG -->
   <div class="main-layout">
     <aside class="filters" role="region" aria-label="Product Filters">
-      <h3>Filters</h3>
-      <p style="font-size: 13px; font-weight: bold; color: #878787;">CATEGORIES</p>
-      <div><input type="checkbox" id="cat-electronics" value="Electronics" onchange="filterProducts()"><label for="cat-electronics"> Electronics</label></div>
-      <div><input type="checkbox" id="cat-fashion" value="Fashion" onchange="filterProducts()"><label for="cat-fashion"> Fashion</label></div>
-      <div><input type="checkbox" id="cat-home" value="Home" onchange="filterProducts()"><label for="cat-home"> Home</label></div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Filters</h3>
+        <button onclick="clearAllFilters()" style="background: none; border: none; color: #2874f0; font-size: 12px; cursor: pointer; font-weight: bold;">Clear All</button>
+      </div>
+      <p style="font-size: 13px; font-weight: bold; color: #878787; margin-top: 14px;">CATEGORIES</p>
+      <div><input type="checkbox" id="cat-electronics" class="cat-filter" value="Electronics" onchange="filterProducts()"><label for="cat-electronics"> Electronics</label></div>
+      <div><input type="checkbox" id="cat-fashion" class="cat-filter" value="Fashion" onchange="filterProducts()"><label for="cat-fashion"> Fashion</label></div>
+      <div><input type="checkbox" id="cat-home" class="cat-filter" value="Home" onchange="filterProducts()"><label for="cat-home"> Home</label></div>
 
       <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;">
 
@@ -154,7 +173,7 @@
     </div>
   </div>
 
-  <!-- AUTH MODAL (LOGIN / REGISTER) -->
+  <!-- AUTH MODAL -->
   <div id="auth-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
     <div class="modal-content">
       <div class="modal-header">
@@ -198,7 +217,7 @@
     </div>
   </div>
 
-  <!-- PAYMENT MODAL WITH INPUT MASKS & INLINE VALIDATION -->
+  <!-- PAYMENT MODAL -->
   <div id="payment-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="payment-modal-title">
     <div class="modal-content">
       <div class="modal-header">
@@ -240,7 +259,7 @@
           </div>
         </div>
 
-        <button type="submit" id="btn-pay-now" data-testid="btn-pay-now" style="width: 100%; background: #fb641b; color: white; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px; transition: background .2s;">
+        <button type="submit" id="btn-pay-now" data-testid="btn-pay-now" style="width: 100%; background: #fb641b; color: white; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px;">
           AUTHORIZE & CONFIRM ORDER
         </button>
       </form>
@@ -293,6 +312,93 @@
     if (currentUser && authToken) {
       updateUserHeader(currentUser);
     }
+
+    // --- 1. BRAND HOME FUNCTION ---
+    function goHome() {
+      // Clear search box
+      const searchBox = document.getElementById('search-input');
+      searchBox.value = '';
+      hideSearchDropdown();
+
+      // Clear all category checkboxes
+      document.querySelectorAll('.cat-filter').forEach(cb => cb.checked = false);
+
+      // Reload primary default catalog
+      loadProducts();
+    }
+
+    // --- 2. LIVE SEARCH AUTOCOMPLETE DROPDOWN ---
+    const searchInput = document.getElementById('search-input');
+    const searchDropdown = document.getElementById('search-dropdown');
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      if (!query) {
+        hideSearchDropdown();
+        loadProducts(); // reset catalog to full view
+        return;
+      }
+
+      // Filter from client cache or fallback
+      const matches = (window.cachedProducts || []).filter(p => 
+        p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)
+      );
+
+      renderSearchDropdown(matches, query);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        hideSearchDropdown();
+        performSearch();
+      }
+    });
+
+    function renderSearchDropdown(items, query) {
+      if (!items || items.length === 0) {
+        searchDropdown.innerHTML = '<div class="dropdown-item" style="color:#94a3b8; cursor:default;">No matching products found</div>';
+        searchDropdown.classList.remove('hidden');
+        return;
+      }
+
+      searchDropdown.innerHTML = items.slice(0, 6).map(item => `
+        <div class="dropdown-item" data-testid="suggestion-item-${item.id}" onclick="selectSearchSuggestion('${item.name}')">
+          <div class="dropdown-item-title">
+            <span>${item.image}</span>
+            <span>${highlightMatch(item.name, query)}</span>
+          </div>
+          <span style="font-weight:bold; color:#2563eb; font-size:13px;">₹${item.price}</span>
+        </div>
+      `).join('');
+
+      searchDropdown.classList.remove('hidden');
+    }
+
+    function highlightMatch(text, query) {
+      const idx = text.toLowerCase().indexOf(query.toLowerCase());
+      if (idx === -1) return text;
+      const before = text.substring(0, idx);
+      const match = text.substring(idx, idx + query.length);
+      const after = text.substring(idx + query.length);
+      return `${before}<strong>${match}</strong>${after}`;
+    }
+
+    function selectSearchSuggestion(productName) {
+      searchInput.value = productName;
+      hideSearchDropdown();
+      performSearch();
+    }
+
+    function hideSearchDropdown() {
+      searchDropdown.classList.add('hidden');
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        hideSearchDropdown();
+      }
+    });
 
     // --- INPUT FORMATTERS & LIVE CLEANUP ---
     const cardInput = document.getElementById('card-number');
@@ -388,6 +494,11 @@
 
     function renderProducts(items) {
       const container = document.getElementById('product-container');
+      if (!items || items.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b; font-size: 16px;">No products found matching your search.</div>';
+        return;
+      }
+
       container.innerHTML = items.map(p => {
         const qty = cartMap[p.id] || 0;
         return `
@@ -651,7 +762,6 @@
       document.getElementById('payment-modal').classList.add('hidden');
     }
 
-    // --- COMPLETE FRONTEND PAYMENT HANDLER WITH VALIDATION ---
     async function handlePayment(e) {
       e.preventDefault();
 
@@ -665,7 +775,6 @@
 
       alertBox.style.display = 'none';
 
-      // 1. Comprehensive Frontend Pre-flight Validations
       let hasError = false;
 
       if (!/^\d{6}$/.test(pincode)) {
@@ -695,7 +804,6 @@
         return;
       }
 
-      // 2. Set button loading state
       submitBtn.disabled = true;
       submitBtn.innerText = 'Authorizing Payment...';
       submitBtn.style.background = '#94a3b8';
@@ -729,7 +837,6 @@
           return;
         }
 
-        // 3. Reset form and show success confirmation
         closePaymentModal();
         showOrderConfirmation(data.order);
 
@@ -795,8 +902,13 @@
     }
 
     function filterProducts() {
-      const checked = [...document.querySelectorAll('.filters input:checked')].map(i => i.value);
+      const checked = [...document.querySelectorAll('.cat-filter:checked')].map(i => i.value);
       loadProducts(checked[0] || '');
+    }
+
+    function clearAllFilters() {
+      document.querySelectorAll('.cat-filter').forEach(cb => cb.checked = false);
+      loadProducts();
     }
 
     function performSearch() {

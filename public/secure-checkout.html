@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bazaar Pro - Nested Iframe Gateway</title>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { margin: 0; background-color: #f1f5f9; padding: 40px; }
+    .checkout-wrap { max-width: 750px; margin: 0 auto; background: white; border-radius: 8px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .frame-container { border: 2px dashed #94a3b8; border-radius: 6px; padding: 12px; margin-top: 20px; background: #fafafa; }
+  </style>
+</head>
+<body>
+
+  <div class="checkout-wrap">
+    <h2>Secure 3D-Authentication Checkout</h2>
+    <p style="color: #64748b; font-size: 14px;">This checkout embeds a Primary Banking Iframe, which in turn embeds an isolated 3DS Verification Modal inside.</p>
+    
+    <div style="margin-bottom: 16px;">
+      <label style="font-weight: bold; font-size: 13px;">Merchant Order Reference: <span id="ref-id">ORD-99824</span></label>
+    </div>
+
+    <!-- LEVEL 1: Primary Gateway Frame -->
+    <div class="frame-container">
+      <span style="font-size: 12px; font-weight: bold; color: #475569;">OUTER IFRAME (PAYMENT GATEWAY SERVICE)</span>
+      <iframe 
+        id="outer-payment-frame" 
+        name="payment-gateway-layer"
+        srcdoc="
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: sans-serif; padding: 15px; margin: 0; background: #ffffff; }
+              .inner-box { border: 2px solid #2563eb; border-radius: 6px; padding: 10px; margin-top: 10px; background: #f8fafc; }
+            </style>
+          </head>
+          <body>
+            <div style='font-size: 13px; font-weight: bold; color: #1e40af;'>Outer Gateway: Verified Merchant Handshake Active</div>
+            
+            <!-- LEVEL 2: Nested Secondary Authentication Frame -->
+            <div class='inner-box'>
+              <span style='font-size: 11px; font-weight: bold; color: #059669;'>INNER IFRAME (BANK 3DS OTP AUTHENTICATOR)</span>
+              <iframe 
+                id='inner-3ds-frame' 
+                name='three-ds-layer'
+                style='width: 100%; height: 180px; border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 8px;'
+                srcdoc='
+                  <!DOCTYPE html>
+                  <html>
+                  <head>
+                    <style>
+                      body { font-family: sans-serif; padding: 12px; margin: 0; }
+                      input { padding: 8px; width: 140px; border: 1px solid #94a3b8; border-radius: 4px; font-size: 16px; letter-spacing: 2px; }
+                      button { background: #059669; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+                    </style>
+                  </head>
+                  <body>
+                    <h4 style=&quot;margin: 0 0 8px 0; color: #0f172a;&quot;>Bank Verification Code</h4>
+                    <p style=&quot;font-size: 12px; color: #64748b; margin: 0 0 10px 0;&quot;>Enter test passcode: <strong>777888</strong></p>
+                    <div style=&quot;display: flex; gap: 8px;&quot;>
+                      <input type=&quot;password&quot; id=&quot;otp-input&quot; maxlength=&quot;6&quot; aria-label=&quot;Enter one time passcode&quot; placeholder=&quot;••••••&quot;>
+                      <button id=&quot;btn-verify-otp&quot; onclick=&quot;verifyPasscode()&quot;>Authorize</button>
+                    </div>
+                    <p id=&quot;auth-status&quot; style=&quot;font-size: 12px; margin-top: 8px; font-weight: bold;&quot;></p>
+                    <script>
+                      function verifyPasscode() {
+                        const val = document.getElementById(&quot;otp-input&quot;).value;
+                        const msg = document.getElementById(&quot;auth-status&quot;);
+                        if (val === &quot;777888&quot;) {
+                          msg.innerText = &quot;Payment Passed & Approved!&quot;;
+                          msg.style.color = &quot;#059669&quot;;
+                          window.top.postMessage({ type: &quot;3DS_AUTHORIZED&quot; }, &quot;*&quot;);
+                        } else {
+                          msg.innerText = &quot;Invalid Passcode. Authorization Rejected.&quot;;
+                          msg.style.color = &quot;#dc2626&quot;;
+                        }
+                      }
+                    <\/script>
+                  </body>
+                  </html>
+                '
+              ></iframe>
+            </div>
+          </body>
+          </html>
+        "
+        style="width: 100%; height: 320px; border: none;"
+      ></iframe>
+    </div>
+
+    <div id="final-checkout-alert" style="display: none; margin-top: 20px; padding: 14px; background: #dcfce7; color: #166534; border-radius: 6px; font-weight: bold;">
+      Transaction Authorized & Synchronized across all Frame Layers.
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === '3DS_AUTHORIZED') {
+        document.getElementById('final-checkout-alert').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

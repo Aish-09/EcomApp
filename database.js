@@ -90,6 +90,30 @@ const seedData = () => {
     [
       'prod-104', 'Ergonomic Mechanical Keyboard', 'Electronics', 3499, 5999, 4.6, 310, 8, 1, '⌨️',
       'Hot-swappable tactile brown switches, per-key RGB backlighting, and detachable Type-C braided cable.'
+    ],
+    [
+      'prod-105', 'Smart Fitness Tracker Watch', 'Electronics', 1999, 3999, 4.3, 820, 15, 1, '⌚',
+      'OLED display, 24/7 heart-rate monitor, sleep tracking, and IP68 waterproof rating.'
+    ],
+    [
+      'prod-106', 'Canvas Casual Sneakers', 'Fashion', 1299, 2499, 4.2, 510, 9, 1, '👟',
+      'Lightweight, durable vulcanized rubber sole with breathable canvas upper.'
+    ],
+    [
+      'prod-107', 'Ceramic Non-Stick Coffee Mug', 'Home', 399, 799, 4.7, 230, 20, 1, '☕',
+      'Matte finish ceramic mug with heat-insulating wooden coaster lid.'
+    ],
+    [
+      'prod-108', 'Minimalist Leather Slim Wallet', 'Fashion', 799, 1499, 4.4, 380, 11, 1, '👛',
+      'RFID-blocking genuine leather pocket wallet with 8 card slots.'
+    ],
+    [
+      'prod-109', 'RGB Ergonomic Gaming Mouse', 'Electronics', 899, 1899, 4.5, 950, 14, 1, '🖱️',
+      '12,800 DPI optical sensor with 6 programmable macro buttons.'
+    ],
+    [
+      'prod-110', 'Aroma Diffuser & Humidifier', 'Home', 1199, 2199, 4.6, 410, 6, 1, '🕯️',
+      'Ultrasonic cool mist humidifier with 7 ambient color LED night lights.'
     ]
   ];
 
