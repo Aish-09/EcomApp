@@ -115,6 +115,22 @@ const seedData = () => {
       'prod-110', 'Aroma Diffuser & Humidifier', 'Home', 1199, 2199, 4.6, 410, 6, 1, '🕯️',
       'Ultrasonic cool mist humidifier with 7 ambient color LED night lights.'
     ]
+    [
+      'prod-111', 'ProBook Ultra Slim Laptop 15"', 'Electronics', 54999, 69999, 4.7, 640, 7, 1, '💻',
+      '16GB RAM, 512GB NVMe SSD, aluminum chassis laptop built for developers and QA engineers.'
+    ],
+    [
+      'prod-112', 'Apple iPhone 14 (128GB) - Midnight', 'Electronics', 58999, 69900, 4.8, 2150, 5, 1, '📱',
+      '6.1-inch Super Retina XDR display, A15 Bionic chip, and dual-camera system.'
+    ],
+    [
+      'prod-113', 'Gaming Laptop RTX 4060 Edition', 'Electronics', 84999, 99999, 4.6, 410, 4, 1, '🖥️',
+      '144Hz FHD display, 16GB DDR5, dedicated graphics for high-FPS gaming.'
+    ],
+    [
+      'prod-114', 'Smart Home LED Strip Lights', 'Home', 599, 1199, 4.3, 190, 25, 1, '💡',
+      'App-controlled RGBIC smart lighting strip with music sync.'
+    ]
   ];
 
   const insertProd = db.prepare(`

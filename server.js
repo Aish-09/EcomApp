@@ -437,10 +437,106 @@ app.post('/api/test/reset', (req, res) => {
   res.json({ message: 'Database reset to default clean state.' });
 });
 
+// ==========================================
+// 9B. QA AUTOMATION LAB ENDPOINTS (OTP, OAuth, Users, Pagination, PDF)
+// ==========================================
+let activeOtps = {};
+
+// Topic #7: Network Interception target (/api/users)
+app.get('/api/users', (req, res) => {
+  const users = db.prepare('SELECT id, name, email FROM users').all();
+  res.json(users.map((u, idx) => ({
+    ...u,
+    age: 26 + idx * 3,
+    status: idx % 2 === 0 ? 'Active' : 'Inactive'
+  })));
+});
+
+// Topic #9: Pagination API (/api/products/paginated?page=1&limit=4)
+app.get('/api/products-paginated', (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page || '1', 10));
+  const limit = Math.max(1, parseInt(req.query.limit || '4', 10));
+  const allProducts = db.prepare('SELECT * FROM products').all().map(r => ({
+    ...r,
+    inStock: Boolean(r.in_stock),
+    originalPrice: r.original_price
+  }));
+  const totalPages = Math.ceil(allProducts.length / limit);
+  const offset = (page - 1) * limit;
+  const items = allProducts.slice(offset, offset + limit);
+
+  res.json({ page, limit, totalPages, totalItems: allProducts.length, items });
+});
+
+// Topic #18: Email OTP Automation (Generates OTP & returns inbox preview for API/UI testing)
+app.post('/api/auth/send-otp', (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email is required to send OTP.' });
+  const otp = String(Math.floor(100000 + Math.random() * 900000));
+  activeOtps[email.toLowerCase()] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 };
+  res.json({ message: `OTP sent to ${email}`, mockInboxOtp: otp });
+});
+
+app.post('/api/auth/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  const record = activeOtps[(email || '').toLowerCase()];
+  if (!record || record.otp !== String(otp) || Date.now() > record.expiresAt) {
+    return res.status(401).json({ error: 'Invalid or expired OTP.' });
+  }
+  delete activeOtps[email.toLowerCase()];
+  const token = jwt.sign({ id: 'usr-otp', email, name: 'OTP Verified User' }, JWT_SECRET, { expiresIn: '2h' });
+  res.json({ message: 'OTP verified successfully!', token });
+});
+
+// Topic #19: OAuth Authentication Flow Simulation
+app.get('/api/auth/oauth/mock-provider', (req, res) => {
+  const redirectUri = req.query.redirect_uri || '/qa-lab.html';
+  const mockCode = 'oauth_code_' + Date.now();
+  res.redirect(`${redirectUri}?code=${mockCode}&provider=BazaarOAuth`);
+});
+
+app.post('/api/auth/oauth/exchange', (req, res) => {
+  const { code } = req.body;
+  if (!code || !code.startsWith('oauth_code_')) {
+    return res.status(400).json({ error: 'Invalid OAuth authorization code.' });
+  }
+  const token = jwt.sign({ id: 'usr-oauth', email: 'oauth.user@bazaar.test', name: 'OAuth Shopper' }, JWT_SECRET, { expiresIn: '6h' });
+  res.json({ message: 'OAuth login complete', token, user: { name: 'OAuth Shopper', email: 'oauth.user@bazaar.test' } });
+});
+
+// Topic #17: Valid Minimal PDF Download Endpoint for PDF Content Validation
+app.get('/api/qa/sample-brochure.pdf', (req, res) => {
+  const pdfContent = `%PDF-1.4
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj
+4 0 obj << /Length 68 >> stream
+BT /F1 18 Tf 50 700 Td (BAZAAR ENTERPRISE QA REPORT - VERIFIED) Tj ET
+endstream endobj
+5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000229 00000 n 
+0000000347 00000 n 
+trailer << /Size 6 /Root 1 0 R >>
+startxref
+417
+%%EOF`;
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'attachment; filename="bazaar-qa-brochure.pdf"');
+  res.send(Buffer.from(pdfContent, 'utf-8'));
+});
+
+
 app.get('/product-details.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'product-details.html')));
 app.get('/secure-checkout.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'secure-checkout.html')));
 app.get('/advanced-catalog.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'advanced-catalog.html')));
 app.use((req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/qa-lab.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'qa-lab.html')));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Bazaar Enterprise Engine online at http://localhost:${PORT}`));

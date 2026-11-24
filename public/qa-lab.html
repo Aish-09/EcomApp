@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BazaarCom — QA Automation Practice Lab</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: #f8fafc; color: #0f172a; }
+    header { background: #0f172a; color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+    header a { color: #38bdf8; text-decoration: none; margin-left: 16px; font-weight: 600; }
+    .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card h3 { margin-top: 0; font-size: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; color: #1e293b; }
+    .badge { background: #e0f2fe; color: #0369a1; font-size: 11px; padding: 2px 8px; border-radius: 99px; float: right; }
+    button { background: #2563eb; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin: 4px 4px 4px 0; }
+    button:hover { background: #1d4ed8; }
+    button.secondary { background: #475569; }
+    button.danger { background: #dc2626; }
+    input, select { padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; margin: 4px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+    th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+    th { background: #f1f5f9; }
+    .product { border: 1px solid #e2e8f0; padding: 8px; margin: 6px 0; border-radius: 6px; display: flex; justify-content: space-between; cursor: pointer; }
+    .product:hover { background: #f1f5f9; }
+    .status-box { margin-top: 8px; padding: 8px; background: #f1f5f9; border-radius: 6px; font-size: 12px; font-family: monospace; }
+    .hidden-secret { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>BazaarCom QA Automation Lab</strong> (All 32 Playwright Scenarios)</div>
+    <nav>
+      <a href="/">Home Store</a>
+      <a href="/advanced-catalog.html">Advanced Catalog</a>
+      <a href="/secure-checkout.html">Checkout</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- 1 & 2. Product List Validation & Dynamic Filtering -->
+    <div class="card">
+      <h3>1 & 2. Product List & Dynamic Filter <span class="badge">Locators / Loops</span></h3>
+      <input type="text" id="product-filter" placeholder="Filter products (e.g. Laptop)..." />
+      <div id="product-list"></div>
+      <div id="selected-product-detail" class="status-box">Click any product above to inspect details</div>
+    </div>
+
+    <!-- 3. Table Validation -->
+    <div class="card">
+      <h3>3. User Data Table <span class="badge">Table Rows</span></h3>
+      <table id="users-table">
+        <thead>
+          <tr><th>Name</th><th>Age</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="name">Alice</td><td class="age">24</td><td class="status">Inactive</td></tr>
+          <tr><td class="name">John</td><td class="age">32</td><td class="status">Active</td></tr>
+          <tr><td class="name">Bob</td><td class="age">29</td><td class="status">Pending</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 4 & 5. Multi-Element Checkboxes & Dropdowns -->
+    <div class="card">
+      <h3>4 & 5. Checkboxes & Dropdown <span class="badge">Form Controls</span></h3>
+      <div>
+        <label><input type="checkbox" class="feature-cb" value="Notifications" /> Email Alerts</label><br/>
+        <label><input type="checkbox" class="feature-cb" value="2FA" /> Two-Factor Auth</label><br/>
+        <label><input type="checkbox" class="feature-cb" value="Beta" /> Beta Features</label>
+      </div>
+      <hr/>
+      <label for="dropdown">Select Role:</label>
+      <select id="dropdown">
+        <option value="option1">Option 1 - QA Engineer</option>
+        <option value="option2">Option 2 - SDET Lead</option>
+        <option value="option3">Option 3 - DevOps</option>
+      </select>
+    </div>
+
+    <!-- 6, 16 & 17. File Upload, File Download & PDF Download -->
+    <div class="card">
+      <h3>6, 16 & 17. Upload, Download & PDF <span class="badge">File I/O</span></h3>
+      <input type="file" id="file-upload-input" />
+      <div class="file-name status-box">No file selected</div>
+      <hr/>
+      <button id="download-txt-btn" onclick="downloadSampleTxt()">Download Summary (.txt)</button>
+      <a href="/api/qa/sample-brochure.pdf" download="bazaar-qa-brochure.pdf">
+        <button type="button" class="secondary">Download PDF Brochure</button>
+      </a>
+    </div>
+
+    <!-- 7 & 20. Network Interception & Third-Party API Failure Mocking -->
+    <div class="card">
+      <h3>7 & 20. Network Interception & Failure <span class="badge">page.route()</span></h3>
+      <button id="fetch-users-btn" onclick="loadUsersFromApi()">Fetch /api/users</button>
+      <button id="gateway-btn" class="secondary" onclick="testGatewayHandshake()">Test Payment Gateway</button>
+      <div id="users-api-output" class="status-box">
+        <span class="user">Waiting for API call...</span>
+      </div>
+    </div>
+
+    <!-- 8 & 11. Flaky Retry Button & Delayed Element -->
+    <div class="card">
+      <h3>8 & 11. Flaky Click & Delayed Element <span class="badge">Auto-Wait</span></h3>
+      <button id="flaky-btn" onclick="handleFlakyClick()">Flaky Action (Fails First 2 Clicks)</button>
+      <button class="secondary" onclick="spawnDelayedElement()">Spawn Element (2.5s delay)</button>
+      <div id="delayed-container" class="status-box">No delayed element yet</div>
+    </div>
+
+    <!-- 9. Pagination Handling -->
+    <div class="card">
+      <h3>9. Paginated Catalog <span class="badge">Pagination</span></h3>
+      <div id="paginated-list"></div>
+      <div style="margin-top:8px;">
+        <button id="prev-page" onclick="changePage(-1)">Prev</button>
+        <span id="page-indicator">Page 1</span>
+        <button id="next-page" onclick="changePage(1)">Next</button>
+      </div>
+    </div>
+
+    <!-- 15, 21, 22, 23 & 24. Tabs, Broken Links, Console Error, Hidden El & Dialogs -->
+    <div class="card">
+      <h3>15 & 21–24. Tabs, Dialogs, Hidden & Errors <span class="badge">Browser APIs</span></h3>
+      <a href="/product-details.html?id=prod-101" target="_blank">Open</a> (New Tab) |
+      <a href="/non-existent-broken-page-404" class="test-link">Broken Link</a>
+      <div style="margin-top:8px;">
+        <button onclick="triggerNativeDialog()">Trigger Confirm Dialog</button>
+        <button class="danger" onclick="triggerConsoleError()">Trigger Console Error</button>
+        <button class="secondary" onclick="toggleHiddenElement()">Toggle Hidden Element</button>
+      </div>
+      <div id="dialog-result" class="status-box">Dialog result: pending</div>
+      <div id="hidden-banner" class="hidden-secret status-box">Secret Promo Code: PLAYWRIGHT2026</div>
+    </div>
+
+    <!-- 18 & 19. Email OTP Automation & OAuth Flow -->
+    <div class="card">
+      <h3>18 & 19. Email OTP & OAuth 2.0 Flow <span class="badge">Auth Flows</span></h3>
+      <input type="email" id="otp-email" value="shopper@test.com" />
+      <button id="send-otp-btn" onclick="requestOtp()">Send OTP</button>
+      <div id="otp-inbox-preview" class="status-box">Mock Inbox: Empty</div>
+      <input type="text" id="otp-code-input" placeholder="Enter 6-digit OTP" />
+      <button id="verify-otp-btn" onclick="verifyOtp()">Verify OTP</button>
+      <hr/>
+      <a href="/api/auth/oauth/mock-provider?redirect_uri=/qa-lab.html">
+        <button type="button" class="secondary">Login with Bazaar OAuth</button>
+      </a>
+      <div id="oauth-status" class="status-box">OAuth Status: Not authenticated</div>
+    </div>
+  </div>
+
+  <script>
+    let allProducts = [];
+    let currentPage = 1;
+    let totalPages = 1;
+    let flakyAttempts = 0;
+
+    // Load products from existing /api/products
+    async function initCatalog() {
+      const res = await fetch('/api/products');
+      allProducts = await res.json();
+      renderProducts(allProducts);
+      loadPaginated(1);
+    }
+
+    function renderProducts(list) {
+      const container = document.getElementById('product-list');
+      container.innerHTML = list.map(p => `
+        <div class="product" onclick="selectProduct('${p.name.replace(/'/g, "\\'")}', ${p.price})">
+          <span class="name">${p.name}</span>
+          <span class="price">$${p.price}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectProduct(name, price) {
+      document.getElementById('selected-product-detail').innerHTML =
+        `Selected Product Details: <strong class="detail-title">${name}</strong> — $${price}`;
+    }
+
+    document.getElementById('product-filter').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(q)));
+    });
+
+    // File Upload UI display
+    document.getElementById('file-upload-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      document.querySelector('.file-name').textContent = file ? `Uploaded: ${file.name}` : 'No file selected';
+    });
+
+    // Client-side TXT download
+    function downloadSampleTxt() {
+      const blob = new Blob(['BazaarCom QA Test Export - Status: PASSED'], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'qa-summary.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Network Interception targets
+    async function loadUsersFromApi() {
+      try {
+        const res = await fetch('/api/users');
+        const data = await res.json();
+        document.getElementById('users-api-output').innerHTML =
+          data.map(u => `<div class="user">${u.name}</div>`).join('');
+      } catch (err) {
+        document.getElementById('users-api-output').textContent = 'API Error: ' + err.message;
+      }
+    }
+
+    async function testGatewayHandshake() {
+      try {
+        const res = await fetch('/api/checkout/gateway-handshake', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: 500 })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        document.getElementById('users-api-output').textContent = 'Gateway: ' + data.gatewayStatus;
+      } catch (err) {
+        document.getElementById('users-api-output').textContent = 'Gateway Unavailable (Fallback Active)';
+      }
+    }
+
+    // Flaky & Delayed Elements
+    function handleFlakyClick() {
+      flakyAttempts++;
+      if (flakyAttempts < 3) {
+        document.getElementById('delayed-container').textContent = `Flaky click ignored (attempt ${flakyAttempts})`;
+        return;
+      }
+      document.getElementById('delayed-container').textContent = 'Flaky action succeeded on attempt 3!';
+    }
+
+    function spawnDelayedElement() {
+      document.getElementById('delayed-container').textContent = 'Loading element...';
+      setTimeout(() => {
+        document.getElementById('delayed-container').innerHTML =
+          `<button id="delayed-element" onclick="this.textContent='Delayed Element Clicked!'">Click Delayed Element</button>`;
+      }, 2500);
+    }
+
+    // Pagination
+    async function loadPaginated(page) {
+      const res = await fetch(`/api/products-paginated?page=${page}&limit=4`);
+      const data = await res.json();
+      currentPage = data.page;
+      totalPages = data.totalPages;
+      document.getElementById('page-indicator').textContent = `Page ${currentPage} of ${totalPages}`;
+      document.getElementById('paginated-list').innerHTML = data.items.map(p => `
+        <div class="product" onclick="selectProduct('${p.name.replace(/'/g, "\\'")}', ${p.price})">
+          <span class="name">${p.name}</span>
+          <span class="price">$${p.price}</span>
+        </div>
+      `).join('');
+      document.getElementById('next-page').style.display = currentPage < totalPages ? 'inline-block' : 'none';
+    }
+
+    function changePage(delta) {
+      const next = currentPage + delta;
+      if (next >= 1 && next <= totalPages) loadPaginated(next);
+    }
+
+    // Dialog, Console Error, Hidden Toggle
+    function triggerNativeDialog() {
+      const accepted = confirm('Confirm QA action?');
+      document.getElementById('dialog-result').textContent = accepted ? 'Dialog Accepted' : 'Dialog Dismissed';
+    }
+
+    function triggerConsoleError() {
+      console.error('Simulated Critical UI Console Error for Playwright Listener');
+    }
+
+    function toggleHiddenElement() {
+      const el = document.getElementById('hidden-banner');
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // OTP & OAuth
+    async function requestOtp() {
+      const email = document.getElementById('otp-email').value;
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      document.getElementById('otp-inbox-preview').textContent = `Mock Inbox OTP: ${data.mockInboxOtp}`;
+    }
+
+    async function verifyOtp() {
+      const email = document.getElementById('otp-email').value;
+      const otp = document.getElementById('otp-code-input').value;
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp })
+      });
+      const data = await res.json();
+      document.getElementById('otp-inbox-preview').textContent = data.message || data.error;
+    }
+
+    // Handle OAuth callback query param if redirected back
+    (async function checkOAuthCallback() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      if (code) {
+        const res = await fetch('/api/auth/oauth/exchange', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+        const data = await res.json();
+        document.getElementById('oauth-status').textContent = `OAuth Authenticated: ${data.user.name} (${data.user.email})`;
+      }
+    })();
+
+    initCatalog();
+  </script>
+</body>
+</html>
